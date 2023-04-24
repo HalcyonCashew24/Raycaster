@@ -11,9 +11,9 @@ public class Game implements KeyListener {
         level = new Map(new int[]{
                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,
                 1,1,1,0,0,0,0,0,0,0,0,0,0,1,
-                1,0,0,0,0,0,0,0,0,0,0,0,0,1,
-                1,0,0,0,1,0,0,0,0,1,0,0,0,1,
-                1,0,0,0,1,0,0,0,0,0,0,0,0,1,
+                1,0,0,0,0,0,0,0,0,0,1,0,0,1,
+                1,0,0,0,1,0,0,0,0,1,1,1,0,1,
+                1,0,0,0,1,0,0,0,0,0,1,0,0,1,
                 1,0,0,0,0,1,0,0,0,0,0,0,0,1,
                 1,1,1,1,1,1,1,1,1,1,1,1,1,1
         },14,7);
@@ -47,6 +47,7 @@ public class Game implements KeyListener {
         if (e.getKeyCode() == KeyEvent.VK_A) {a = true;}
         if (e.getKeyCode() == KeyEvent.VK_S) {s = true;}
         if (e.getKeyCode() == KeyEvent.VK_D) {d = true;}
+        if (e.getKeyCode() == KeyEvent.VK_N) {level = Map.generateMap(14,7);}
     }
 
     @Override
