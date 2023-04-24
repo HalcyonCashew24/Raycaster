@@ -18,6 +18,9 @@ public class Panel extends JPanel {
     public void paint(Graphics b) {
         Game g = Main.game;
 
+        b.setColor(Color.WHITE);
+        b.fillRect(0, 0, Main.panel.width, Main.panel.height);
+        
         g.movePlayer();
 
         b.setColor(Color.GRAY);

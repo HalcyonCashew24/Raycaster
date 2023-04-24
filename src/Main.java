@@ -7,6 +7,8 @@ public class Main {
     static Panel panel = new Panel(1280, 720);
 
     public static void main(String[] args) throws InterruptedException {
+    	ImageIcon i = new ImageIcon("IMG_3057.PNG");
+    	frame.setIconImage(i.getImage());
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
         frame.add(panel);
