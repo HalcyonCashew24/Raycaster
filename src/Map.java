@@ -16,16 +16,15 @@ public class Map {
         floor = new int[width*height];
         Arrays.fill(floor, 1);
         ceiling = new int[width*height];
-        Arrays.fill(ceiling, 1);
+        Arrays.fill(ceiling, 0);
     }
 
-    Map(int[] map, int[] floor, int width, int height) {
+    Map(int[] map, int[] floor, int[] ceiling, int width, int height) {
         this.map = map;
         this.width = width;
         this.height = height;
         this.floor = floor;
-        ceiling = new int[width*height];
-        Arrays.fill(ceiling, 1);
+        this.ceiling = ceiling;
     }
 
     public int getWall(int x, int y) {

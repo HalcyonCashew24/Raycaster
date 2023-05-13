@@ -3,6 +3,7 @@ import java.awt.event.*;
 
 public class Game implements KeyListener, MouseMotionListener {
     Map level;
+    Map[] rooms = new Map[2];
     Texture[] walls = new Texture[3];
     Texture[] interactions = new Texture[2];
     Texture[] floors = new Texture[2];
@@ -11,7 +12,7 @@ public class Game implements KeyListener, MouseMotionListener {
     double playerA = 90;
 
     Game() {
-        level = new Map(new int[]{
+        rooms[0] = new Map(new int[]{
                 0,2,0,0,1,0,0,
                 0,2,0,0,1,0,0,
                 0,0,0,0,2,0,0,
@@ -25,7 +26,20 @@ public class Game implements KeyListener, MouseMotionListener {
                 0,1,1,1,1,1,1,
                 1,1,1,1,1,1,1,
                 1,1,1,1,1,1,1,
+        }, new int[]{
+        		1,1,0,0,1,0,1,
+                1,1,1,1,1,1,1,
+                1,0,0,0,1,0,0,
+                1,0,1,0,1,0,0,
+                1,0,1,0,1,1,1,
+                1,1,1,1,1,0,1,
         },7,6);
+        
+        rooms[1] = new Map(new int[]{
+                1,2,0,2,1,2,0,1,2,2,1,0,2,1,2,0,2,1,
+                -2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-3,
+                1,2,0,2,1,2,0,1,2,2,1,0,2,1,2,0,2,1,
+        },18,3);
 
         walls[1] = new Texture("./src/brick.png");
         walls[2] = new Texture("./src/smooth_stone_slab_side.png");
@@ -34,28 +48,19 @@ public class Game implements KeyListener, MouseMotionListener {
 
         floors[0] = new Texture("./src/brick.png");
         floors[1] = new Texture("./src/smooth_stone_slab_side.png");
+        
+        level = rooms[0];
     }
 
     public void doorCheck() {
         int tile = level.getWall((int)playerX/32,(int)playerY/32);
         if (tile == -1) {
-            level = new Map(new int[]{
-                    1,2,0,2,1,2,0,1,2,2,1,0,2,1,2,0,2,1,
-                    -2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-3,
-                    1,2,0,2,1,2,0,1,2,2,1,0,2,1,2,0,2,1,
-                    },18,3);
+            level = rooms[1];
             playerY -= 32*4;
             playerX -= 32*5;
         }
         else if (tile == -2) {
-            level = new Map(new int[]{
-                    0,2,0,0,1,0,0,
-                    0,2,0,0,1,0,0,
-                    0,0,0,0,2,0,0,
-                    2,0,1,0,0,0,0,
-                    0,0,1,0,2,2,2,
-                    0,2,1,0,0,0,-1,
-            },7,6);
+            level = rooms[0];
             playerY += 32*4;
             playerX += 32*5;
         }
@@ -122,7 +127,7 @@ public class Game implements KeyListener, MouseMotionListener {
     }
 
     Point mousePos = MouseInfo.getPointerInfo().getLocation();
-    Point mousePrevPos;
+    Point mousePrevPos = mousePos;
     double mouseDX;
 
     @Override

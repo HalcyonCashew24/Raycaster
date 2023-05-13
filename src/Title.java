@@ -4,7 +4,7 @@ import java.awt.event.MouseMotionListener;
 
 public class Title extends Screen implements MouseMotionListener {
 
-    int mouseY = 0;
+    int mouseY = MouseInfo.getPointerInfo().getLocation().y;
 
     Title(int width, int height) {
         super(width, height);
@@ -31,6 +31,7 @@ public class Title extends Screen implements MouseMotionListener {
 
         //System.out.println(MouseInfo.getPointerInfo().getLocation().x);
 
+        b.dispose();
     }
 
     @Override

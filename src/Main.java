@@ -17,7 +17,7 @@ public class Main {
     	Image i = Toolkit.getDefaultToolkit().getImage("IMG_3057.PNG");
     	frame.setIconImage(i);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
+        frame.setResizable(true);
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
@@ -31,6 +31,10 @@ public class Main {
         while(true) {
             try {
                 Thread.sleep(50); //20fps
+                
+                panel.setSize(new Dimension(frame.getWidth()-16,frame.getHeight()-39));
+                frame.pack();
+             
                 panel.repaint();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);

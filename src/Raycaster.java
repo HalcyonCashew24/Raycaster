@@ -85,14 +85,16 @@ public class Raycaster {
         }
     }
 
+    public static void floorPlane(Graphics b) {
+        b.setColor(Color.BLACK);
+        b.fillRect(20,20,20,20);
+    }
+
     public static void paint(Graphics b) {
         Game g = Main.game;
         Panel p = Main.panel;
         double screenX = 0;
         double screenDX = Main.panel.width/60.0;
-
-        int mouse = MouseInfo.getPointerInfo().getLocation().x;//todo delete
-        System.out.println(mouse);
 
         for (double a = g.playerA - 30; a < g.playerA + 30; a++) {
 
@@ -122,20 +124,28 @@ public class Raycaster {
                 b.setColor(new Color((int) (c.getRed()*shade), (int) (c.getGreen()*shade), (int) (c.getBlue()*shade)));
                 b.fillRect((int) screenX, (int) (wOffset+wLength/16.0*y), (int) (screenDX+1), (int) (wLength/16 +1));
             }
+            
+            for(int y=(int) (wOffset+wLength);y<p.height;y++)
+            {
+             double dy=y-(p.height/2.0), deg= Math.toRadians(a), raFix=Math.cos(Math.toRadians(g.playerA-a));
+             int tx=(int) (g.playerX/2 + Math.cos(deg)*(p.height/2)*16/dy/raFix)*2;
+             int ty=(int) (g.playerY/2 + Math.sin(deg)*(p.height/2)*16/dy/raFix)*2;
+             int mp=g.level.getFloor((int)(tx/32.0), (int)(ty/32.0));
+             Color c=g.floors[mp].getPixel(tx/2&15, ty/2&15);
+             
+             b.setColor(new Color((int)(c.getRed()*0.7),(int)(c.getGreen()*0.7),(int)(c.getBlue()*0.7)));
+             b.fillRect((int)((a-g.playerA+30)*screenDX), y, (int)screenDX+1,1);
 
-            for (int y = (int) (wLength + wOffset); y < p.height; y++) {
-                double dy = y - p.height/2.0;
-                double aFix = Math.cos(Math.toRadians(g.playerA-a));
-                int tx = (int) (g.playerX/2 + Math.cos(Math.toRadians(a))*mouse*32/dy/aFix);
-                int ty = (int) (g.playerY/2 - Math.sin(Math.toRadians(a))*mouse*32/dy/aFix);
-
-                Color c = g.floors[g.level.getFloor(tx/32,ty/32)].getPixel(tx&15,ty&15);
-                b.setColor(c);
-                b.fillRect((int) screenX,y, (int) screenDX +1, 1);
-
-                c = g.floors[g.level.getCeiling(tx/32,ty/32)].getPixel(tx&15,ty&15);
-                b.setColor(c);
-                b.fillRect((int) screenX,p.height-y, (int) screenDX +1, 1);
+             mp=g.level.getCeiling((int)(tx/32.0), (int)(ty/32.0));
+             
+             if (mp != 0) {
+            	 c=g.floors[mp].getPixel(tx/2&15, ty/2&15);
+             
+            	 b.setColor(c);
+            	 b.fillRect((int)((a-g.playerA+30)*screenDX), p.height-y, (int)screenDX+1,1);
+             }
+             
+             
             }
 
             screenX += screenDX;

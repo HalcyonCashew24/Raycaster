@@ -28,6 +28,7 @@ public class Screen extends BufferedImage implements MouseListener {
         b.drawString("Esc to Quit",width/2 -41,height/2 +40);
 
         //System.out.println(MouseInfo.getPointerInfo().getLocation().x);
+        b.dispose();
     }
 
     @Override
