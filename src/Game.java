@@ -3,51 +3,90 @@ import java.awt.event.*;
 
 public class Game implements KeyListener, MouseMotionListener {
     Map level;
-    Map[] rooms = new Map[2];
-    Texture[] walls = new Texture[3];
-    Texture[] interactions = new Texture[2];
-    Texture[] floors = new Texture[2];
-    double playerX = 16;
-    double playerY = 16;
+    Map[] rooms = new Map[100];
+    Texture[] walls = new Texture[8];
+    Texture[] doors = new Texture[2];
+    Texture[] floors = new Texture[5];
+    double playerX = 48;
+    double playerY = 48;
     double playerA = 90;
 
     Game() {
         rooms[0] = new Map(new int[]{
-                0,2,0,0,1,0,0,
-                0,2,0,0,1,0,0,
-                0,0,0,0,2,0,0,
-                2,0,1,0,0,0,0,
-                0,0,1,0,2,2,2,
-                0,2,1,0,0,0,-1,
+        		4,6,4,3,3,4,4,4,4,
+                4,0,4,0,0,4,0,0,4,
+                4,0,4,0,0,3,0,0,5,
+                5,0,0,0,0,4,0,0,3,
+                3,4,0,3,0,0,0,0,3,
+                3,0,0,5,0,4,4,4,3,
+                3,0,4,3,0,0,0,-1,3,
+                4,4,4,3,3,5,3,3,3,
         }, new int[]{
-                0,1,1,1,1,1,1,
-                0,1,1,1,1,1,1,
-                0,1,1,1,1,1,1,
-                0,1,1,1,1,1,1,
-                1,1,1,1,1,1,1,
-                1,1,1,1,1,1,1,
+        		3,3,3,3,3,3,3,3,3,
+        		3,4,3,3,3,3,4,4,3,
+        		3,4,3,3,3,3,3,3,3,
+        		3,3,3,3,3,3,3,3,3,
+        		3,3,3,3,3,4,3,3,3,
+        		3,3,3,3,3,3,3,3,3,
+        		3,3,3,3,3,4,4,3,3,
+        		3,3,3,3,3,3,3,3,3,
         }, new int[]{
-        		1,1,0,0,1,0,1,
-                1,1,1,1,1,1,1,
-                1,0,0,0,1,0,0,
-                1,0,1,0,1,0,0,
-                1,0,1,0,1,1,1,
-                1,1,1,1,1,0,1,
-        },7,6);
+        		3,3,3,3,3,3,3,3,3,
+        		3,4,3,3,3,3,4,4,3,
+        		3,4,3,3,3,3,3,3,3,
+        		3,3,3,3,3,3,3,3,3,
+        		3,3,3,3,3,4,3,3,3,
+        		3,3,3,3,3,3,3,3,3,
+        		3,3,3,3,3,4,4,3,3,
+        		3,3,3,3,3,3,3,3,3,
+        },9,8);
         
         rooms[1] = new Map(new int[]{
-                1,2,0,2,1,2,0,1,2,2,1,0,2,1,2,0,2,1,
-                -2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-3,
-                1,2,0,2,1,2,0,1,2,2,1,0,2,1,2,0,2,1,
-        },18,3);
+                3,3,3,3,1,1,1,1,
+                -2,0,0,2,1,1,1,1,
+                3,0,0,0,0,0,0,-3,
+                3,0,0,0,0,0,0,1,
+                3,3,3,4,1,0,1,1,
+                1,1,1,1,1,7,1,1,
+        },new int[]{
+                3,3,3,3,1,1,1,1,
+                3,3,3,4,1,1,1,1,
+                3,3,3,2,1,1,1,1,
+                3,3,3,4,1,1,1,1,
+                3,3,3,4,1,1,1,1,
+                1,1,1,1,1,1,1,1,
+        },new int[]{
+        		3,3,3,4,0,0,0,0,
+                3,3,3,2,0,0,0,0,
+                3,3,3,0,0,0,0,0,
+                3,3,3,2,0,0,0,0,
+                3,3,3,4,0,0,0,0,
+                0,0,0,0,0,0,0,0,
+        },8,6);
+        
+        rooms[99] = new Map(new int[]{
+        		0,0,0,0,0,0,0,0,0,
+        		0,1,2,3,4,5,6,7,0,
+        		0,0,0,0,0,0,0,0,0,
+        		0,0,0,0,0,0,0,0,0,
+        		0,0,0,0,0,0,0,0,0,
+        },9,5);
 
-        walls[1] = new Texture("./src/brick.png");
-        walls[2] = new Texture("./src/smooth_stone_slab_side.png");
+        walls[1] = new Texture("./txt/brick.png");
+        walls[2] = new Texture("./txt/studded_plate.png");
+        walls[3] = new Texture("./txt/brick_dark.png");
+        walls[4] = new Texture("./txt/studded_plate_dark.png");
+        walls[5] = new Texture("./txt/brick_light.png");
+        walls[6] = new Texture("./txt/studded_plate_light.png");
+        walls[7] = new Texture("./txt/tree.png");
 
-        interactions[1] = new Texture("./src/IMG_3057.PNG");
+        doors[1] = new Texture("./txt/door.png");
 
-        floors[0] = new Texture("./src/brick.png");
-        floors[1] = new Texture("./src/smooth_stone_slab_side.png");
+        floors[1] = walls[1];
+        floors[2] = walls[2];
+        floors[3] = walls[3];
+        floors[4] = walls[4];
+
         
         level = rooms[0];
     }
@@ -56,13 +95,13 @@ public class Game implements KeyListener, MouseMotionListener {
         int tile = level.getWall((int)playerX/32,(int)playerY/32);
         if (tile == -1) {
             level = rooms[1];
-            playerY -= 32*4;
-            playerX -= 32*5;
+            playerY -= 32*5;
+            playerX -= 32*6;
         }
         else if (tile == -2) {
             level = rooms[0];
-            playerY += 32*4;
-            playerX += 32*5;
+            playerY += 32*5;
+            playerX += 32*6;
         }
         else if (tile == -3) {
             Main.screen = 1;
@@ -112,8 +151,13 @@ public class Game implements KeyListener, MouseMotionListener {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {left = true;}
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {right = true;}
         if (e.getKeyCode() == KeyEvent.VK_N) {level = Map.generateMap(14,7);}
-        if (e.getKeyCode() == KeyEvent.VK_C) {level = new Map(new int[98],14,7);}
+        if (e.getKeyCode() == KeyEvent.VK_C) {level = rooms[99];}
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {System.exit(0);}
+        if (e.getKeyCode() == KeyEvent.VK_Q) {
+        	Main.fullScreen = !Main.fullScreen;
+        	GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(Main.frame);
+        	//GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+        }
     }
 
     @Override
