@@ -38,7 +38,7 @@ public class Screen extends BufferedImage implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        Main.pause = false;
+        Main.screen = 0;
         Main.frame.removeMouseListener(this);
         Main.frame.addKeyListener(Main.game);
         Main.frame.addMouseMotionListener(Main.game);

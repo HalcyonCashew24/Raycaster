@@ -74,7 +74,7 @@ public class Raycaster {
         int vWallType = Main.game.level.getWall((int) (rayX/32), (int) (rayY/32));
 
         if (hLength < vLength) {
-            shade = 1.0;
+            shade = 0.8;
             wallType = hWallType;
             return hLength;
         }
@@ -100,7 +100,7 @@ public class Raycaster {
             double wOffset = p.height/2.0 - wLength/2.0;
 
             int textureX;
-            if (shade == 1.0)
+            if (shade == 0.8)
                 textureX = (int) Math.abs((hitY%32)/2);
             else
                 textureX = (int) Math.abs((hitX%32)/2);
@@ -136,7 +136,7 @@ public class Raycaster {
             	if (mp != 0) {
             		c=g.floors[mp].getPixel(tx/2&15, ty/2&15);
              
-            		b.setColor(c);
+            		b.setColor(new Color((int)(c.getRed()*0.7),(int)(c.getGreen()*0.7),(int)(c.getBlue()*0.7)));
             		b.fillRect((int)((a-g.playerA+30)*screenDX), p.height-y-1, (int)screenDX+1,2);
             	}
             }

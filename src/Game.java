@@ -87,7 +87,6 @@ public class Game implements KeyListener, MouseMotionListener {
         floors[3] = walls[3];
         floors[4] = walls[4];
 
-        
         level = rooms[0];
     }
 
@@ -104,8 +103,8 @@ public class Game implements KeyListener, MouseMotionListener {
             playerX += 32*6;
         }
         else if (tile == -3) {
-            Main.screen = 1;
-            Main.pause = true;
+        	Main.frame.removeMouseMotionListener(this);
+            Main.screen = 2;
         }
     }
 
@@ -136,6 +135,7 @@ public class Game implements KeyListener, MouseMotionListener {
     boolean d = false;
     boolean left = false;
     boolean right = false;
+    boolean shift = false;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -150,14 +150,15 @@ public class Game implements KeyListener, MouseMotionListener {
         if (e.getKeyCode() == KeyEvent.VK_D) {d = true;}
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {left = true;}
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {right = true;}
+        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {shift = true;}
         if (e.getKeyCode() == KeyEvent.VK_N) {level = Map.generateMap(14,7);}
         if (e.getKeyCode() == KeyEvent.VK_C) {level = rooms[99];}
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {System.exit(0);}
-        if (e.getKeyCode() == KeyEvent.VK_Q) {
-        	Main.fullScreen = !Main.fullScreen;
-        	GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(Main.frame);
-        	//GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
-        }
+
+        GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+        if (e.getKeyCode() == KeyEvent.VK_Q && !shift) {gd.setFullScreenWindow(null);Main.frame.setExtendedState(Frame.MAXIMIZED_BOTH);}
+        else if (e.getKeyCode() == KeyEvent.VK_Q && shift && gd.getFullScreenWindow() == null) {gd.setFullScreenWindow(Main.frame);}
+        else if (e.getKeyCode() == KeyEvent.VK_Q && shift && gd.getFullScreenWindow() == Main.frame) {gd.setFullScreenWindow(null);}
     }
 
     @Override
@@ -168,26 +169,35 @@ public class Game implements KeyListener, MouseMotionListener {
         if (e.getKeyCode() == KeyEvent.VK_D) {d = false;}
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {left = false;}
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {right = false;}
+        if (e.getKeyCode() == KeyEvent.VK_SHIFT) {shift = false;}
     }
-
-    Point mousePos = MouseInfo.getPointerInfo().getLocation();
-    Point mousePrevPos = mousePos;
-    double mouseDX;
 
     @Override
     public void mouseDragged(MouseEvent e) {
 
     }
+    
+    Robot r = null; {
+    	try {
+    		r = new Robot();
+    	} catch (AWTException e) {
+    		System.err.println(e);
+    	}
+    }
 
     @Override
     public void mouseMoved(MouseEvent e) {
-
-        mousePrevPos = new Point(mousePos.x,mousePos.y);
-        mousePos = e.getLocationOnScreen();
-
-        mouseDX = mousePrevPos.x - mousePos.x;
-
-        playerA -= mouseDX/5;
+    	
+    	if (Main.pause)
+    		return;
+    	
+    	Point l = Main.frame.getLocationOnScreen();
+    	l.x += Main.panel.width/2;
+    	l.y += Main.panel.height/2;
+    	
+    	playerA -= (l.x - e.getXOnScreen())/5.0;
+    	
+        r.mouseMove(l.x, l.y);
 
         if (playerA >= 360) {playerA -= 360;}
         if (playerA < 0) {playerA += 360;}

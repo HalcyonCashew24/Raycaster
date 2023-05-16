@@ -24,14 +24,14 @@ public class Panel extends JPanel {
 
         skyScale = height/128.0;
         Image img = new ImageIcon("./txt/sky.png").getImage();
-        sky = new BufferedImage(width,width,BufferedImage.TYPE_INT_RGB);
+        sky = new BufferedImage(width,height,BufferedImage.TYPE_INT_RGB);
         Graphics2D g = sky.createGraphics();
         g.scale(skyScale,skyScale);
         g.drawImage(img,0,0,null);
         g.dispose();
     }
     
-    public void setSize(Dimension d) {
+    public void resize(Dimension d) {
     	setPreferredSize(d);
     	width = d.width;
     	height = d.height;
@@ -43,16 +43,19 @@ public class Panel extends JPanel {
         g.scale(skyScale,skyScale);
         g.drawImage(img,0,0,null);
         g.dispose();
-        
+
         title = new Title(d.width,d.height);
         Main.frame.addMouseMotionListener(title);
-        
+
         screen = new Screen(d.width,d.height);
     }
 
     public void paint(Graphics b) {
 
-        if (!Main.pause) {
+    	if (Main.pause)
+    		return;
+    	
+        if (Main.screen == 0) {
             Game g = Main.game;
             
             g.movePlayer();
@@ -63,11 +66,11 @@ public class Panel extends JPanel {
             }
             Raycaster.paint(b);
         }
-        else if (Main.screen == 0) {
+        else if (Main.screen == 1) {
             title.paint();
             b.drawImage(title,0,0,null);
         }
-        else if (Main.screen == 1) {
+        else if (Main.screen == 2) {
             screen.paint();
             b.drawImage(screen,0,0,null);
         }
