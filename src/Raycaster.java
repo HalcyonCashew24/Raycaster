@@ -7,11 +7,18 @@ public class Raycaster {
     public static double hitY;
     public static Integer wallType = 1;
 
+    public static final int numRays = 250;
+    public static final int fov = 60;
+
+    public static double[] depths = new double[numRays];
+
     public static double raycast(double rayA) {
         double pX = Main.game.playerX;
         double pY = Main.game.playerY;
         double rayX = 0;
         double rayY = 0;
+        double nTan = -Math.tan(Math.toRadians(rayA));
+        double nCot = 1/nTan;
 
         //normalize angle
         if (rayA >= 360) {rayA -= 360;}
@@ -19,49 +26,49 @@ public class Raycaster {
 
         //***** left-right check *****
         if (rayA > 90 && rayA < 270) { //left
-            rayX = Math.floor(pX/32)*32 - 0.0001;
-            rayY = pY + -Math.tan(Math.toRadians(rayA))*(pX-rayX);
+            rayX = (((int)pX>>5)<<5) - 0.0001;
+            rayY = pY + nTan*(pX-rayX);
 
-            while (Main.game.level.getWall((int) Math.floor(rayX/32), (int) Math.floor(rayY/32)) == 0) {
+            while (Main.game.level.getWall((int)rayX>>5, (int)rayY>>5) == 0) {
                 rayX -= 32;
-                rayY = pY + -Math.tan(Math.toRadians(rayA))*(pX-rayX);
+                rayY = pY + nTan*(pX-rayX);
             }
         }
         if (rayA > 270 || rayA < 90) { //right
-            rayX = Math.floor(pX/32)*32 + 32;
-            rayY = pY + -Math.tan(Math.toRadians(rayA))*(pX-rayX);
+            rayX = (((int)pX>>5)+1)<<5;
+            rayY = pY + nTan*(pX-rayX);
 
-            while (Main.game.level.getWall((int) Math.floor(rayX/32), (int) Math.floor(rayY/32)) == 0) {
+            while (Main.game.level.getWall((int)rayX>>5, (int)rayY>>5) == 0) {
                 rayX += 32;
-                rayY = pY + -Math.tan(Math.toRadians(rayA))*(pX-rayX);
+                rayY = pY + nTan*(pX-rayX);
             }
         }
         if (rayA == 270 || rayA == 90) { //up and down
-            rayX = -1000;
-            rayY = -1000;
+            rayX = -64;
+            rayY = -64;
         }
 
         double hLength = Math.sqrt((pX-rayX)*(pX-rayX) + (pY-rayY)*(pY-rayY));
         hitY = rayY;
-        int hWallType = Main.game.level.getWall((int) (rayX/32), (int) (rayY/32));
+        int hWallType = Main.game.level.getWall((int)rayX>>5, (int)rayY>>5);
 
         //***** up-down check *****
         if (rayA > 180) { //up
-            rayY = Math.floor(pY/32)*32 - 0.0001;
-            rayX = pX + 1/-Math.tan(Math.toRadians(rayA))*(pY-rayY);
+            rayY = (((int)pY>>5)<<5) - 0.0001;
+            rayX = pX + nCot*(pY-rayY);
 
-            while (Main.game.level.getWall((int) Math.floor(rayX/32), (int) Math.floor(rayY/32)) == 0) {
+            while (Main.game.level.getWall((int)rayX>>5, (int)rayY>>5) == 0) {
                 rayY -= 32;
-                rayX = pX + 1/-Math.tan(Math.toRadians(rayA))*(pY-rayY);
+                rayX = pX + nCot*(pY-rayY);
             }
         }
         if (rayA < 180) { //down
-            rayY = Math.floor(pY/32)*32 + 32;
-            rayX = pX + 1/-Math.tan(Math.toRadians(rayA))*(pY-rayY);
+            rayY = (((int)pY>>5)+1)<<5;
+            rayX = pX + nCot*(pY-rayY);
 
-            while (Main.game.level.getWall((int) Math.floor(rayX/32), (int) Math.floor(rayY/32)) == 0) {
+            while (Main.game.level.getWall((int)rayX>>5, (int)rayY>>5) == 0) {
                 rayY += 32;
-                rayX = pX + 1/-Math.tan(Math.toRadians(rayA))*(pY-rayY) - 0.0001;
+                rayX = pX + nCot*(pY-rayY) - 0.0001;
             }
         }
         if (rayA == 0 || rayA == 180) { //left and right
@@ -89,11 +96,12 @@ public class Raycaster {
         Game g = Main.game;
         Panel p = Main.panel;
         double screenX = 0;
-        double screenDX = Main.panel.width/60.0;
+        double screenDX = Main.panel.width/(double)numRays;
 
-        for (double a = g.playerA - 30; a < g.playerA + 30; a++) {
+        for (double a = g.playerA - fov/2.0; a < g.playerA + fov/2.0; a += (double)fov/numRays) {
 
             double rLength = raycast(a);
+            depths[(int)(screenX/screenDX)] = rLength;
             
             double wLength = 32*p.height/(rLength * Math.cos(Math.toRadians(g.playerA-a)));
 
@@ -120,27 +128,26 @@ public class Raycaster {
                 b.fillRect((int) screenX, (int) (wOffset+wLength/16.0*y), (int) (screenDX+1), (int) (wLength/16 +1));
             }
             
-            for(int y=(int) (wOffset+wLength);y<p.height;y++) {
+            for(int y=(int) (wOffset+wLength)+1;y<p.height+1;y++) {
             	double dy=y-(p.height/2.0), deg= Math.toRadians(a), raFix=Math.cos(Math.toRadians(g.playerA-a));
             	int tx=(int) (g.playerX/2 + Math.cos(deg)*(p.height/2)*16/dy/raFix)*2;
             	int ty=(int) (g.playerY/2 + Math.sin(deg)*(p.height/2)*16/dy/raFix)*2;
-            	int mp=g.level.getFloor((int)(tx/32.0), (int)(ty/32.0));
+            	int mp=g.level.getFloor(tx>>5, ty>>5);
             	if (mp == 0) {mp = 1;}
-            	Color c=g.floors[mp].getPixel(tx/2&15, ty/2&15);
+            	Color c=g.floors[mp].getPixel(tx>>1&15, ty>>1&15);
              
             	b.setColor(new Color((int)(c.getRed()*0.7),(int)(c.getGreen()*0.7),(int)(c.getBlue()*0.7)));
-            	b.fillRect((int)((a-g.playerA+30)*screenDX), y-1, (int)screenDX+1,2);
+            	b.fillRect((int)((a-g.playerA+fov/2.0)*screenDX*((double)numRays/fov)), y-1, (int)screenDX+1,1);
 
-            	mp=g.level.getCeiling((int)(tx/32.0), (int)(ty/32.0));
-             
+            	mp=g.level.getCeiling(tx>>5, ty>>5);
+
             	if (mp != 0) {
-            		c=g.floors[mp].getPixel(tx/2&15, ty/2&15);
+            		c=g.floors[mp].getPixel(tx>>1&15, ty>>1&15);
              
             		b.setColor(new Color((int)(c.getRed()*0.7),(int)(c.getGreen()*0.7),(int)(c.getBlue()*0.7)));
-            		b.fillRect((int)((a-g.playerA+30)*screenDX), p.height-y-1, (int)screenDX+1,2);
+                    b.fillRect((int)((a-g.playerA+fov/2.0)*screenDX*((double)numRays/fov)), p.height-y-1, (int)screenDX+1,8);
             	}
             }
-            
             screenX += screenDX;
         }
     }

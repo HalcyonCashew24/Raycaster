@@ -3,127 +3,93 @@ import java.awt.event.*;
 
 public class Game implements KeyListener, MouseMotionListener {
     Map level;
-    Map[] rooms = new Map[100];
+    Map[] rooms;
     Texture[] walls = new Texture[8];
     Texture[] doors = new Texture[2];
-    Texture[] floors = new Texture[5];
-    double playerX = 48;
-    double playerY = 48;
+    Texture[] floors = new Texture[6];
+    Texture[] items = new Texture[3];
+    double playerX = 1*32+16;
+    double playerY = 1*32+16;
     double playerA = 90;
+    boolean shoot = false;
 
     Game() {
-        rooms[0] = new Map(new int[]{
-        		4,6,4,3,3,4,4,4,4,
-                4,0,4,0,0,4,0,0,4,
-                4,0,4,0,0,3,0,0,5,
-                5,0,0,0,0,4,0,0,3,
-                3,4,0,3,0,0,0,0,3,
-                3,0,0,5,0,4,4,4,3,
-                3,0,4,3,0,0,0,-1,3,
-                4,4,4,3,3,5,3,3,3,
-        }, new int[]{
-        		3,3,3,3,3,3,3,3,3,
-        		3,4,3,3,3,3,4,4,3,
-        		3,4,3,3,3,3,3,3,3,
-        		3,3,3,3,3,3,3,3,3,
-        		3,3,3,3,3,4,3,3,3,
-        		3,3,3,3,3,3,3,3,3,
-        		3,3,3,3,3,4,4,3,3,
-        		3,3,3,3,3,3,3,3,3,
-        }, new int[]{
-        		3,3,3,3,3,3,3,3,3,
-        		3,4,3,3,3,3,4,4,3,
-        		3,4,3,3,3,3,3,3,3,
-        		3,3,3,3,3,3,3,3,3,
-        		3,3,3,3,3,4,3,3,3,
-        		3,3,3,3,3,3,3,3,3,
-        		3,3,3,3,3,4,4,3,3,
-        		3,3,3,3,3,3,3,3,3,
-        },9,8);
-        
-        rooms[1] = new Map(new int[]{
-                3,3,3,3,1,1,1,1,
-                -2,0,0,2,1,1,1,1,
-                3,0,0,0,0,0,0,-3,
-                3,0,0,0,0,0,0,1,
-                3,3,3,4,1,0,1,1,
-                1,1,1,1,1,7,1,1,
-        },new int[]{
-                3,3,3,3,1,1,1,1,
-                3,3,3,4,1,1,1,1,
-                3,3,3,2,1,1,1,1,
-                3,3,3,4,1,1,1,1,
-                3,3,3,4,1,1,1,1,
-                1,1,1,1,1,1,1,1,
-        },new int[]{
-        		3,3,3,4,0,0,0,0,
-                3,3,3,2,0,0,0,0,
-                3,3,3,0,0,0,0,0,
-                3,3,3,2,0,0,0,0,
-                3,3,3,4,0,0,0,0,
-                0,0,0,0,0,0,0,0,
-        },8,6);
-        
-        rooms[99] = new Map(new int[]{
-        		0,0,0,0,0,0,0,0,0,
-        		0,1,2,3,4,5,6,7,0,
-        		0,0,0,0,0,0,0,0,0,
-        		0,0,0,0,0,0,0,0,0,
-        		0,0,0,0,0,0,0,0,0,
-        },9,5);
 
-        walls[1] = new Texture("./txt/brick.png");
-        walls[2] = new Texture("./txt/studded_plate.png");
-        walls[3] = new Texture("./txt/brick_dark.png");
-        walls[4] = new Texture("./txt/studded_plate_dark.png");
-        walls[5] = new Texture("./txt/brick_light.png");
-        walls[6] = new Texture("./txt/studded_plate_light.png");
-        walls[7] = new Texture("./txt/tree.png");
+        rooms = Map.loadRooms();
 
-        doors[1] = new Texture("./txt/door.png");
+        walls[1] = new Texture("textures/brick.png");
+        walls[2] = new Texture("textures/studded_plate.png");
+        walls[3] = new Texture("textures/brick_dark.png");
+        walls[4] = new Texture("textures/studded_plate_dark.png");
+        walls[5] = new Texture("textures/brick_light.png");
+        walls[6] = new Texture("textures/studded_plate_light.png");
+        walls[7] = new Texture("textures/tree.png");
+
+        doors[1] = new Texture("textures/door.png");
 
         floors[1] = walls[1];
         floors[2] = walls[2];
         floors[3] = walls[3];
         floors[4] = walls[4];
+        floors[5] = new Texture("textures/grass.png");
 
-        level = rooms[0];
+        items[1] = new Texture("textures/IMG_3057.PNG");
+        items[2] = walls[1];
+
+        level = rooms[1];
     }
 
     public void doorCheck() {
         int tile = level.getWall((int)playerX/32,(int)playerY/32);
         if (tile == -1) {
-            level = rooms[1];
+            level = rooms[2];
             playerY -= 32*5;
             playerX -= 32*6;
         }
         else if (tile == -2) {
-            level = rooms[0];
+            level = rooms[1];
             playerY += 32*5;
             playerX += 32*6;
         }
         else if (tile == -3) {
-        	Main.frame.removeMouseMotionListener(this);
+        	level = rooms[3];
+            playerX -= 32*5;
+            playerY += 32*2;
+        }
+        else if (tile == -4) {
+            level = rooms[2];
+            playerX += 32*5;
+            playerY -= 32*2;
+        }
+        else if (tile == -5) {
             Main.screen = 2;
+            Main.frame.removeMouseMotionListener(this);
         }
     }
 
     public void movePlayer() {
 
-        if (w) {if (level.getWall((int) (playerX + Math.cos(Math.toRadians(playerA))*10)/32, (int) playerY/32) <= 0) {playerX += Math.cos(Math.toRadians(playerA))*5;}
-                if (level.getWall((int) playerX/32, (int) (playerY + Math.sin(Math.toRadians(playerA))*10)/32) <= 0) {playerY += Math.sin(Math.toRadians(playerA))*5;}}
-        if (s) {if (level.getWall((int) (playerX - Math.cos(Math.toRadians(playerA))*10)/32, (int) playerY/32) <= 0) {playerX -= Math.cos(Math.toRadians(playerA))*5;}
-                if (level.getWall((int) playerX/32, (int) (playerY - Math.sin(Math.toRadians(playerA))*10)/32) <= 0) {playerY -= Math.sin(Math.toRadians(playerA))*5;}}
-        if (a) {if (level.getWall((int) (playerX + Math.cos(Math.toRadians(playerA-90))*10)/32, (int) playerY/32) <= 0) {playerX += Math.cos(Math.toRadians(playerA-90))*4;}
-                if (level.getWall((int) playerX/32, (int) (playerY + Math.sin(Math.toRadians(playerA-90))*10)/32) <= 0) {playerY += Math.sin(Math.toRadians(playerA-90))*4;}}
-        if (d) {if (level.getWall((int) (playerX + Math.cos(Math.toRadians(playerA+90))*10)/32, (int) playerY/32) <= 0) {playerX += Math.cos(Math.toRadians(playerA+90))*4;}
-                if (level.getWall((int) playerX/32, (int) (playerY + Math.sin(Math.toRadians(playerA+90))*10)/32) <= 0) {playerY += Math.sin(Math.toRadians(playerA+90))*4;}}
+        double cos = Math.cos(Math.toRadians(playerA));
+        double sin = Math.sin(Math.toRadians(playerA));
+
+        if (w) {if (level.getWall((int)(playerX + cos*10)>>5, (int)playerY>>5) <= 0) {playerX += cos*6;}
+                if (level.getWall((int)playerX>>5, (int)(playerY + sin*10)>>5) <= 0) {playerY += sin*6;}}
+        if (s) {if (level.getWall((int)(playerX - cos*10)>>5, (int)playerY>>5) <= 0) {playerX -= cos*6;}
+                if (level.getWall((int)playerX>>5, (int)(playerY - sin*10)>>5) <= 0) {playerY -= sin*6;}}
+
+        cos = Math.cos(Math.toRadians(playerA+90));
+        sin = Math.sin(Math.toRadians(playerA+90));
+
+        if (d) {if (level.getWall((int)(playerX + cos*10)>>5, (int)playerY>>5) <= 0) {playerX += cos*4;}
+                if (level.getWall((int)playerX>>5, (int)(playerY + sin*10)>>5) <= 0) {playerY += sin*4;}}
+        if (a) {if (level.getWall((int)(playerX - cos*10)>>5, (int)playerY>>5) <= 0) {playerX -= cos*4;}
+                if (level.getWall((int)playerX>>5, (int)(playerY - sin*10)>>5) <= 0) {playerY -= sin*4;}}
 
         if (playerX < 10) {playerX = 10;}
         if (playerY < 10) {playerY = 10;}
 
-        if (left) {playerA -= 5;}
-        if (right) {playerA += 5;}
+        if (left) {playerA -= 7;}
+        if (right) {playerA += 7;}
 
         if (playerA >= 360) {playerA -= 360;}
         if (playerA < 0) {playerA += 360;}
@@ -152,8 +118,9 @@ public class Game implements KeyListener, MouseMotionListener {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {right = true;}
         if (e.getKeyCode() == KeyEvent.VK_SHIFT) {shift = true;}
         if (e.getKeyCode() == KeyEvent.VK_N) {level = Map.generateMap(14,7);}
-        if (e.getKeyCode() == KeyEvent.VK_C) {level = rooms[99];}
+        if (e.getKeyCode() == KeyEvent.VK_C) {level = rooms[0];}
         if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {System.exit(0);}
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {shoot = true;}
 
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         if (e.getKeyCode() == KeyEvent.VK_Q && !shift) {gd.setFullScreenWindow(null);Main.frame.setExtendedState(Frame.MAXIMIZED_BOTH);}
@@ -170,6 +137,7 @@ public class Game implements KeyListener, MouseMotionListener {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) {left = false;}
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {right = false;}
         if (e.getKeyCode() == KeyEvent.VK_SHIFT) {shift = false;}
+        if (e.getKeyCode() == KeyEvent.VK_SPACE) {shoot = false;}
     }
 
     @Override

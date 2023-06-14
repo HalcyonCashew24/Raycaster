@@ -3,7 +3,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-
 import javax.swing.*;
 
 public class Main extends ComponentAdapter implements FocusListener {
@@ -16,7 +15,6 @@ public class Main extends ComponentAdapter implements FocusListener {
     //static Panel panel = new Panel(Toolkit.getDefaultToolkit().getScreenSize().width,Toolkit.getDefaultToolkit().getScreenSize().height);
     static boolean pause = true;
     static int screen = 1;
-    static boolean fullScreen = false;
 
 	public static void main(String[] args) {
     	Image i = Toolkit.getDefaultToolkit().getImage("placeholder.png");
@@ -34,20 +32,22 @@ public class Main extends ComponentAdapter implements FocusListener {
 
         //GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().setFullScreenWindow(frame);
         
-        Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon("./txt/cursor.png").getImage(), new Point(0,0), null);
-        
+        Cursor cursor = Toolkit.getDefaultToolkit().createCustomCursor(new ImageIcon("./textures/cursor.png").getImage(), new Point(0,0), null);
+
+        long frame1 = System.currentTimeMillis();
+        long frame2;
+
         while (true) {
-            try {
-                Thread.sleep(50); //20fps
+            frame2 = System.currentTimeMillis();
+            if (frame2 - frame1 >= 50) {
                 panel.repaint();
-                
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                //System.out.println(panel.frameTime);
+                frame1 = frame2;
             }
-            
-            if (screen == 0 && !pause) 
+
+            if (screen == 0 && !pause)
             	frame.setCursor(cursor);
-            else 
+            else
             	frame.setCursor(null);
         }
     }
